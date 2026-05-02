@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>Happy Birthday তরঙ্গিনী 🌸</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .hero-card { text-align:center; max-width:560px; padding:44px 32px; }
+    .birthday-emoji { font-size:clamp(2.8rem,10vw,4.5rem); display:block; margin-bottom:16px; animation:pulse 2.5s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+    .birthday-name { font-family:'Dancing Script',cursive; font-size:clamp(2rem,7vw,3.6rem); color:var(--accent-pink); line-height:1.3; margin-bottom:12px; }
+    .birthday-sub { font-size:clamp(1rem,3.5vw,1.2rem); color:var(--text-soft); line-height:1.7; margin-bottom:8px; }
+    .date-badge { display:inline-block; font-size:0.82rem; color:var(--accent-gold); border:1px solid rgba(240,208,128,0.3); border-radius:30px; padding:5px 16px; margin:16px 0 28px; letter-spacing:0.5px; }
+    .petal-row { font-size:1.2rem; letter-spacing:6px; color:var(--accent-pink); opacity:0.6; margin:16px 0; }
+    .quote-block { background:rgba(244,167,185,0.07); border-left:2px solid var(--accent-pink); border-radius:0 12px 12px 0; padding:14px 18px; margin:20px 0 32px; text-align:left; }
+    .quote-block p { text-align:left; font-size:clamp(0.9rem,3vw,1rem); color:var(--text-soft); line-height:1.8; font-style:italic; }
+    @media (max-height:500px) and (orientation:landscape) {
+      .birthday-emoji{font-size:2rem;margin-bottom:8px}
+      .hero-card{padding:20px 28px}
+    }
+  </style>
+</head>
+<body style="opacity:0">
+  <div class="stars-bg" aria-hidden="true"></div>
+  <div class="page-indicator">1 / 5</div>
+
+  <!-- 🎵 গান: Tum Hi Ho — Aashiqui 2 (Arijit Singh) -->
+  <div class="music-player" id="musicPlayer">
+    <button class="music-btn" id="playBtn" aria-label="সুর চালাও">▶</button>
+    <span class="music-label" id="musicLabel">সুর চালাও</span>
+  </div>
+
+  <div class="page-wrapper">
+    <div class="content-layer">
+      <div class="card hero-card fade-in">
+        <span class="birthday-emoji" aria-hidden="true">🎂</span>
+        <h1 class="birthday-name">Happy Birthday<br/>RIYA JI. <br>আমার তরঙ্গিনী আমার প্রথম ভালোবাসা জীবনের<br/>🌸</h1>
+        <div class="petal-row" aria-hidden="true">✿ · ✿ · ✿</div>
+        <span class="date-badge" id="bdDate">🗓 আজকের দিনটা শুধু তোমার</span>
+        <div class="quote-block">
+          <p>"তুমি যখন হাসো, মনে হয় সব ঠিক আছে। আজকের দিনটা শুধু তোমার জন্য।"</p>
+        </div>
+        <p class="birthday-sub fade-in">কিছু কথা আছে, কিছু স্মৃতি আছে —<br/>একটু সময় নিয়ে দেখবে?</p>
+        <div class="nav-row fade-in">
+          <button class="btn btn-primary" onclick="goToPage('page2.html')" aria-label="স্মৃতির পেজে যাও">স্মৃতিগুলো দেখি →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      createHearts(10);
+      /* 🎵 YouTube Video ID — Tum Hi Ho (T-Series official 2013) */
+      initYouTubePlayer('NUo8CKI34o4');
+    });
+  </script>
+</body>
+</html>
