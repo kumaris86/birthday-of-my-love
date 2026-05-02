@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>স্মৃতিগুলো 📸</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .memories-wrapper{max-width:980px;width:100%}
+    .section-header{text-align:center;margin-bottom:32px}
+    .section-emoji{font-size:2.2rem;display:block;margin-bottom:8px}
+    .photo-grid{display:grid;grid-template-columns:1fr;gap:24px;width:100%}
+    @media(min-width:600px){.photo-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(min-width:900px){.photo-grid{grid-template-columns:repeat(3,1fr)}}
+    .memory-card{background:var(--bg-card);border:1px solid var(--border-soft);border-radius:18px;overflow:hidden;backdrop-filter:blur(10px);transition:transform 0.3s ease,box-shadow 0.3s ease;cursor:pointer;outline:none;-webkit-tap-highlight-color:transparent}
+    .memory-card:hover,.memory-card:focus-visible{transform:translateY(-4px);box-shadow:0 12px 36px rgba(244,167,185,0.18)}
+    .memory-img-wrap{width:100%;aspect-ratio:4/3;overflow:hidden;background:rgba(255,255,255,0.04);position:relative}
+    .memory-img-wrap img,.memory-img-wrap video{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.5s ease}
+    .memory-card:hover .memory-img-wrap img,.memory-card:hover .memory-img-wrap video{transform:scale(1.05)}
+    .img-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text-dim);font-size:0.85rem;gap:8px;text-align:center;padding:16px}
+    .img-placeholder span:first-child{font-size:2rem}
+    .video-badge{position:absolute;right:10px;bottom:10px;background:rgba(0,0,0,0.65);color:#fff;font-size:0.78rem;padding:6px 10px;border-radius:999px;backdrop-filter:blur(6px);z-index:2}
+    .memory-caption{padding:16px 18px}
+    .memory-caption p{text-align:left;font-size:clamp(0.88rem,2.8vw,0.98rem);color:var(--text-soft);line-height:1.85;font-style:italic}
+    .caption-date{font-size:0.74rem;color:var(--text-dim);margin-top:8px;display:inline-block;font-style:normal}
+    /* Lightbox */
+    .lightbox{position:fixed;inset:0;background:rgba(7,10,20,0.94);display:flex;align-items:center;justify-content:center;padding:24px;z-index:9999;opacity:0;pointer-events:none;transition:opacity 0.3s ease}
+    .lightbox.active{opacity:1;pointer-events:auto}
+    .lightbox-inner{width:min(100%,980px);max-height:92vh;display:flex;flex-direction:column;align-items:center;gap:14px}
+    .lightbox-media{width:100%;display:flex;align-items:center;justify-content:center}
+    .lightbox-media img,.lightbox-media video{max-width:100%;max-height:72vh;border-radius:18px;box-shadow:0 20px 60px rgba(0,0,0,0.45);object-fit:contain}
+    .lightbox-caption-box{text-align:center;max-width:780px;padding:0 8px}
+    .lightbox-caption-box p{color:var(--text-soft);font-size:clamp(0.95rem,3vw,1.06rem);line-height:1.8;margin-bottom:6px;font-style:italic}
+    .lightbox-caption-box span{font-size:0.8rem;color:var(--text-dim)}
+    .lightbox-close,.lightbox-nav{position:absolute;border:none;background:rgba(255,255,255,0.12);color:#fff;width:46px;height:46px;border-radius:50%;cursor:pointer;font-size:1.2rem;backdrop-filter:blur(10px);transition:transform 0.2s ease,background 0.2s ease;z-index:2}
+    .lightbox-close:hover,.lightbox-nav:hover{transform:scale(1.08);background:rgba(255,255,255,0.2)}
+    .lightbox-close{top:18px;right:18px}
+    .lightbox-nav.prev{left:18px;top:50%;transform:translateY(-50%)}
+    .lightbox-nav.next{right:18px;top:50%;transform:translateY(-50%)}
+    .lightbox-nav.prev:hover,.lightbox-nav.next:hover{transform:translateY(-50%) scale(1.08)}
+    body.no-scroll{overflow:hidden}
+    @media(max-width:640px){
+      .lightbox{padding:16px}
+      .lightbox-close,.lightbox-nav{width:40px;height:40px;font-size:1rem}
+      .lightbox-close{top:10px;right:10px}
+      .lightbox-nav.prev{left:8px}
+      .lightbox-nav.next{right:8px}
+      .lightbox-media img,.lightbox-media video{max-height:62vh}
+    }
+  </style>
+</head>
+<body style="opacity:0">
+  <div class="stars-bg" aria-hidden="true"></div>
+  <div class="page-indicator">2 / 5</div>
+
+  <!-- 🎵 গান: তোমাকে চাই — Gangster (Bengali, Arijit Singh) -->
+  <div class="music-player" id="musicPlayer">
+    <button class="music-btn" id="playBtn" aria-label="সুর চালাও">▶</button>
+    <span class="music-label" id="musicLabel">সুর চালাও</span>
+  </div>
+
+  <div class="page-wrapper" style="padding-top:40px;padding-bottom:40px">
+    <div class="content-layer memories-wrapper">
+      <div class="section-header fade-in">
+        <span class="section-emoji" aria-hidden="true">📸</span>
+        <h2>আমাদের কিছু মুহূর্ত</h2>
+        <div class="divider"></div>
+        <p>কিছু ছবি শুধু দেখা যায় না — অনুভবও করা যায়।</p>
+      </div>
+      <div class="photo-grid" id="photoGrid"></div>
+      <div class="nav-row fade-in" style="margin-top:36px">
+        <button class="btn btn-primary" onclick="goToPage('page3.html')">চিঠি দেখি →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" aria-hidden="true">
+    <button class="lightbox-close" id="lightboxClose" aria-label="বন্ধ করো">✕</button>
+    <button class="lightbox-nav prev" id="lightboxPrev" aria-label="আগেরটি">❮</button>
+    <div class="lightbox-inner">
+      <div class="lightbox-media" id="lightboxMedia"></div>
+      <div class="lightbox-caption-box">
+        <p id="lightboxCaption"></p>
+        <span id="lightboxDate"></span>
+      </div>
+    </div>
+    <button class="lightbox-nav next" id="lightboxNext" aria-label="পরেরটি">❯</button>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    /* =============================================
+       📸 PHOTOS — caption গুলো এখানে বদলাও
+       ============================================= */
+    const PHOTOS = [
+      {
+        src: 'assets/images/photo1.png',
+        caption: 'তোমার চোখের ভেতর যেন একটা পুরো দুনিয়া আছে — যেখানে হারিয়ে যেতে ইচ্ছে করে বারবার।',
+        date: ''
+      },
+      {
+        src: 'assets/images/photo2.png',
+        caption: 'তুমি হাসলে মনে হয় কোথাও একটা ফুল ফুটে যায় — চোখে দেখা যায় না, কিন্তু মনে অনুভব হয়।',
+        date: ''
+      },
+      {
+        src: 'assets/images/photo3.png',
+        caption: 'কিছু মানুষ থাকে, যাদের দেখলেই মনটা হালকা হয়ে যায়। তুমি আমার সেই মানুষ।',
+        date: ''
+      },
+      {
+        src: 'assets/images/photo4.png',
+        caption: 'এই ছবিটা সংরক্ষণ করেছি অনেক যত্নে — কারণ সুন্দর জিনিস হারিয়ে ফেলতে নেই।',
+        date: ''
+      },
+      {
+        src: 'assets/images/photo5.png',
+        caption: 'তোমার উপস্থিতি যেন একটা আলো — কাছে না থাকলেও মনে হয় কোথাও জ্বলছে।',
+        date: ''
+      },
+      {
+        src: 'assets/images/video1.mp4',
+        caption: 'কিছু মুহূর্ত শব্দে ধরা যায় না, ছবিতেও না — শুধু হৃদয় বুঝতে পারে।',
+        date: ''
+      }
+    ];
+
+    let currentIndex = 0;
+    function isVideoFile(src=''){return /\.(mp4|webm|ogg)$/i.test(src);}
+    function createFallback(){const d=document.createElement('div');d.className='img-placeholder';d.innerHTML='<span>🖼</span><span>মিডিয়া লোড হয়নি</span>';return d;}
+
+    function createGridMedia(photo, index) {
+      if (!photo.src) return createFallback();
+      if (isVideoFile(photo.src)) {
+        const wrap=document.createElement('div');wrap.style.cssText='width:100%;height:100%;position:relative;';
+        const v=document.createElement('video');v.src=photo.src;v.preload='metadata';v.muted=true;v.playsInline=true;
+        const badge=document.createElement('div');badge.className='video-badge';badge.textContent='▶ ভিডিও';
+        wrap.appendChild(v);wrap.appendChild(badge);return wrap;
+      }
+      const img=document.createElement('img');img.src=photo.src;img.alt=`স্মৃতি ${index+1}`;img.loading='lazy';
+      img.onerror=function(){const p=img.parentElement;if(p){p.innerHTML='';p.appendChild(createFallback());}};
+      return img;
+    }
+
+    function createLightboxMedia(item) {
+      if (!item.src) return createFallback();
+      if (isVideoFile(item.src)) {
+        const v=document.createElement('video');v.controls=true;v.autoplay=true;v.playsInline=true;v.preload='metadata';
+        const s=document.createElement('source');s.src=item.src;s.type='video/mp4';
+        v.appendChild(s);return v;
+      }
+      const img=document.createElement('img');img.src=item.src;img.alt='স্মৃতি';
+      img.onerror=function(){const p=img.parentElement;if(p){p.innerHTML='';p.appendChild(createFallback());}};
+      return img;
+    }
+
+    function openLightbox(index) {
+      currentIndex = index;
+      const lb=document.getElementById('lightbox');
+      const mb=document.getElementById('lightboxMedia');
+      const cap=document.getElementById('lightboxCaption');
+      const dat=document.getElementById('lightboxDate');
+      const item=PHOTOS[currentIndex];
+      if(!item||!lb||!mb)return;
+      mb.innerHTML='';mb.appendChild(createLightboxMedia(item));
+      cap.textContent=item.caption?`"${item.caption}"`:'';
+      dat.textContent=item.date?`📅 ${item.date}`:'';
+      lb.classList.add('active');lb.setAttribute('aria-hidden','false');
+      document.body.classList.add('no-scroll');
+    }
+
+    function closeLightbox() {
+      const lb=document.getElementById('lightbox');
+      const mb=document.getElementById('lightboxMedia');
+      if(mb)mb.innerHTML='';
+      if(lb){lb.classList.remove('active');lb.setAttribute('aria-hidden','true');}
+      document.body.classList.remove('no-scroll');
+    }
+
+    function renderPhotos() {
+      const grid=document.getElementById('photoGrid');if(!grid)return;
+      grid.innerHTML='';
+      PHOTOS.forEach((photo,i)=>{
+        const card=document.createElement('div');card.className='memory-card fade-in';
+        card.setAttribute('tabindex','0');card.setAttribute('role','button');
+        const wrap=document.createElement('div');wrap.className='memory-img-wrap';wrap.appendChild(createGridMedia(photo,i));
+        const capWrap=document.createElement('div');capWrap.className='memory-caption';
+        const p=document.createElement('p');p.textContent=`"${photo.caption}"`;capWrap.appendChild(p);
+        if(photo.date){const d=document.createElement('span');d.className='caption-date';d.textContent=`📅 ${photo.date}`;capWrap.appendChild(d);}
+        card.appendChild(wrap);card.appendChild(capWrap);
+        card.style.transitionDelay=`${i*0.1}s`;
+        card.addEventListener('click',()=>openLightbox(i));
+        card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openLightbox(i);}});
+        grid.appendChild(card);
+      });
+      initFadeIn();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderPhotos();
+      initYouTubePlayer('1f18irP--O8'); /* তোমাকে চাই — Gangster Bengali */
+
+      const lbClose=document.getElementById('lightboxClose');
+      const lbPrev=document.getElementById('lightboxPrev');
+      const lbNext=document.getElementById('lightboxNext');
+      const lb=document.getElementById('lightbox');
+      if(lbClose)lbClose.addEventListener('click',closeLightbox);
+      if(lbPrev)lbPrev.addEventListener('click',()=>{currentIndex=(currentIndex-1+PHOTOS.length)%PHOTOS.length;openLightbox(currentIndex);});
+      if(lbNext)lbNext.addEventListener('click',()=>{currentIndex=(currentIndex+1)%PHOTOS.length;openLightbox(currentIndex);});
+      if(lb)lb.addEventListener('click',e=>{if(e.target===lb)closeLightbox();});
+      document.addEventListener('keydown',e=>{
+        if(!lb.classList.contains('active'))return;
+        if(e.key==='Escape')closeLightbox();
+        if(e.key==='ArrowLeft'){currentIndex=(currentIndex-1+PHOTOS.length)%PHOTOS.length;openLightbox(currentIndex);}
+        if(e.key==='ArrowRight'){currentIndex=(currentIndex+1)%PHOTOS.length;openLightbox(currentIndex);}
+      });
+    });
+  </script>
+</body>
+</html>
