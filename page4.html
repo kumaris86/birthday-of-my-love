@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>ভিডিও বার্তা 🎬</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .video-wrapper{max-width:620px;width:100%}
+    .section-header{text-align:center;margin-bottom:24px}
+
+    /* ===== Video Slider ===== */
+    .vid-slider-outer{width:100%;overflow:hidden;border-radius:20px}
+    .vid-slider-track{display:flex;transition:transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94)}
+    .vid-slide{min-width:100%;flex-shrink:0;box-sizing:border-box}
+
+    .video-card{
+      background:var(--bg-card);
+      border:1px solid var(--border-soft);
+      border-radius:20px;
+      overflow:hidden;
+      backdrop-filter:blur(8px);
+    }
+    .video-card video{
+      width:100%;display:block;
+      max-height:52vh;
+      background:#000;
+      outline:none;
+    }
+    .video-caption{padding:16px 20px;border-top:1px solid var(--border-soft)}
+    .video-caption p{text-align:left;font-size:0.92rem;color:var(--text-soft);line-height:1.7;font-style:italic}
+    .video-title{font-family:'Dancing Script',cursive;font-size:1.1rem;color:var(--accent-gold);margin-bottom:6px;font-style:normal}
+
+    /* Video nav bar */
+    .vid-nav{
+      display:flex;align-items:center;justify-content:center;
+      gap:16px;margin-top:18px;
+    }
+    .vid-nav-btn{
+      background:var(--bg-card);
+      border:1px solid var(--border-soft);
+      border-radius:50%;
+      width:52px;height:52px;
+      font-size:1.2rem;color:var(--accent-pink);
+      cursor:pointer;transition:all 0.25s ease;
+      display:flex;align-items:center;justify-content:center;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .vid-nav-btn:hover{background:rgba(244,167,185,0.15);transform:scale(1.08)}
+    .vid-nav-btn:disabled{opacity:0.3;cursor:default;transform:none}
+    .vid-counter{font-size:0.88rem;color:var(--text-dim);min-width:56px;text-align:center}
+
+    /* dots */
+    .vid-dots{display:flex;justify-content:center;gap:10px;margin-top:12px}
+    .vid-dot{width:8px;height:8px;border-radius:50%;background:var(--text-dim);transition:all 0.3s ease;cursor:pointer}
+    .vid-dot.active{background:var(--accent-pink);transform:scale(1.4)}
+
+    /* auto-next badge */
+    .next-badge{
+      display:none;
+      align-items:center;justify-content:center;
+      gap:8px;margin-top:12px;
+      font-size:0.82rem;color:var(--accent-gold);
+      animation:pulse 1.5s ease-in-out infinite;
+    }
+    .next-badge.show{display:flex}
+
+    @media(max-height:500px) and (orientation:landscape){
+      .video-card video{max-height:40vh}
+    }
+  </style>
+</head>
+<body style="opacity:0">
+  <div class="stars-bg" aria-hidden="true"></div>
+  <div class="page-indicator">4 / 5</div>
+
+  <!-- 🎵 গান: Kabira Encore — Yeh Jawaani Hai Deewani (Arijit Singh) -->
+  <div class="music-player" id="musicPlayer">
+    <button class="music-btn" id="playBtn" aria-label="সুর চালাও">▶</button>
+    <span class="music-label" id="musicLabel">সুর চালাও</span>
+  </div>
+
+  <div class="page-wrapper" style="padding-top:40px;padding-bottom:40px">
+    <div class="content-layer video-wrapper">
+      <div class="section-header fade-in">
+        <span style="font-size:2rem;display:block;margin-bottom:8px" aria-hidden="true">🎬</span>
+        <h2>এটা শুধু তোমার জন্য</h2>
+        <div class="divider"></div>
+        <p>টাইপ করে বোঝানো যাচ্ছিল না, তাই…</p>
+      </div>
+
+      <!-- Video Slider -->
+      <div class="vid-slider-outer fade-in">
+        <div class="vid-slider-track" id="vidTrack"></div>
+      </div>
+
+      <!-- Auto-next hint -->
+      <div class="next-badge" id="nextBadge">✨ পরের ভিডিও আসছে...</div>
+
+      <!-- Dots -->
+      <div class="vid-dots" id="vidDots"></div>
+
+      <!-- Nav -->
+      <div class="vid-nav fade-in">
+        <button class="vid-nav-btn" id="vidPrev" aria-label="আগের ভিডিও">←</button>
+        <span class="vid-counter" id="vidCounter">1 / 2</span>
+        <button class="vid-nav-btn" id="vidNext" aria-label="পরের ভিডিও">→</button>
+      </div>
+
+      <div class="nav-row fade-in" style="margin-top:28px">
+        <button class="btn btn-primary" onclick="goToPage('page5.html')">শেষ কথাটা →</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    /* =============================================
+       🎬 VIDEOS — দুটো ভিডিওর নাম এখানে দাও
+       ফাইল রাখো: assets/videos/ ফোল্ডারে
+       ============================================= */
+    const VIDEOS = [
+      {
+        src: 'assets/videos/message.mp4',    /* ← ১ম ভিডিওর নাম */
+        title: 'তোমার জন্য — ১',
+        caption: 'আমার জীবনের স্পেশাল মানুষটাকে স্পেশাল ফিল করানোর ক্ষুদ্র চেষ্টা।'
+      },
+      {
+        src: 'assets/videos/message2.mp4',   /* ← ২য় ভিডিওর নাম */
+        title: 'তোমার জন্য — ২',
+        caption: 'কিছু কথা মুখে বলা যায় না — তাই আবার বলার চেষ্টা করলাম।'
+      }
+    ];
+
+    let vidCurrent = 0;
+    const vidTrack   = document.getElementById('vidTrack');
+    const vidDots    = document.getElementById('vidDots');
+    const vidCounter = document.getElementById('vidCounter');
+    const vidPrev    = document.getElementById('vidPrev');
+    const vidNext    = document.getElementById('vidNext');
+    const nextBadge  = document.getElementById('nextBadge');
+    let autoTimer    = null;
+
+    function buildVideos() {
+      vidTrack.innerHTML='';vidDots.innerHTML='';
+      VIDEOS.forEach((vid,i)=>{
+        /* slide */
+        const slide = document.createElement('div');
+        slide.className='vid-slide';
+        const card  = document.createElement('div');
+        card.className='video-card';
+
+        if (vid.src) {
+          card.innerHTML=`
+            <video controls preload="metadata" playsinline webkit-playsinline
+              aria-label="${vid.title||'ভিডিও বার্তা'}" id="vid-${i}">
+              <source src="${vid.src}" type="video/mp4"/>
+              তোমার browser ভিডিও support করে না।
+            </video>
+            <div class="video-caption">
+              ${vid.title?`<p class="video-title">${vid.title}</p>`:''}
+              ${vid.caption?`<p>${vid.caption}</p>`:''}
+            </div>`;
+        } else {
+          card.innerHTML=`
+            <div style="aspect-ratio:16/9;background:#000;display:flex;align-items:center;justify-content:center;color:var(--text-dim);font-size:0.85rem;flex-direction:column;gap:8px">
+              <span style="font-size:2.5rem">🎬</span>
+              <span>assets/videos/ ফোল্ডারে ভিডিও রাখো</span>
+            </div>
+            <div class="video-caption"><p class="video-title">${vid.title||''}</p>${vid.caption?`<p>${vid.caption}</p>`:''}</div>`;
+        }
+        slide.appendChild(card);
+        vidTrack.appendChild(slide);
+
+        /* dot */
+        const dot=document.createElement('div');
+        dot.className='vid-dot'+(i===0?' active':'');
+        dot.addEventListener('click',()=>goVid(i));
+        vidDots.appendChild(dot);
+      });
+
+      /* ভিডিও ১ শেষ হলে ভিডিও ২ তে auto-যাবে */
+      VIDEOS.forEach((_,i)=>{
+        const el=document.getElementById(`vid-${i}`);
+        if(!el)return;
+        el.addEventListener('ended',()=>{
+          if(i < VIDEOS.length-1){
+            nextBadge.classList.add('show');
+            autoTimer=setTimeout(()=>{
+              nextBadge.classList.remove('show');
+              goVid(i+1);
+              const nextEl=document.getElementById(`vid-${i+1}`);
+              if(nextEl)nextEl.play().catch(()=>{});
+            }, 2000);
+          }
+        });
+      });
+
+      updateVidUI();
+    }
+
+    function updateVidUI() {
+      vidTrack.style.transform=`translateX(-${vidCurrent*100}%)`;
+      vidCounter.textContent=`${vidCurrent+1} / ${VIDEOS.length}`;
+      vidPrev.disabled=(vidCurrent===0);
+      vidNext.disabled=(vidCurrent===VIDEOS.length-1);
+      document.querySelectorAll('.vid-dot').forEach((d,i)=>d.classList.toggle('active',i===vidCurrent));
+    }
+
+    function goVid(index) {
+      clearTimeout(autoTimer);nextBadge.classList.remove('show');
+      /* বর্তমান ভিডিও pause করো */
+      const cur=document.getElementById(`vid-${vidCurrent}`);
+      if(cur&&!cur.paused)cur.pause();
+      vidCurrent=Math.max(0,Math.min(VIDEOS.length-1,index));
+      updateVidUI();
+    }
+
+    vidPrev.addEventListener('click',()=>goVid(vidCurrent-1));
+    vidNext.addEventListener('click',()=>goVid(vidCurrent+1));
+
+    document.addEventListener('DOMContentLoaded',()=>{
+      buildVideos();
+      /* 🎵 Kabira Encore — Yeh Jawaani Hai Deewani */
+      initYouTubePlayer('lwLVJ0E8gN4');
+    });
+  </script>
+</body>
+</html>

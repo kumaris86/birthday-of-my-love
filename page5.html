@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+  <title>শেষ কথা 🌸</title>
+  <link rel="stylesheet" href="style.css"/>
+  <style>
+    .final-wrapper{max-width:560px;width:100%}
+    .section-header{text-align:center;margin-bottom:32px}
+    .letter-card{
+      background:var(--bg-card);
+      border:1px solid var(--border-soft);
+      border-radius:20px;
+      padding:36px 32px;
+      backdrop-filter:blur(12px);
+      box-shadow:0 8px 32px rgba(0,0,0,0.3),0 0 60px var(--glow);
+      position:relative;
+    }
+    .letter-deco{text-align:center;font-size:1.4rem;margin-bottom:20px;opacity:0.7;letter-spacing:6px}
+    .message-body{
+      font-family:'Hind Siliguri',sans-serif;
+      font-size:clamp(1rem,3.2vw,1.15rem);
+      color:var(--text-soft);
+      line-height:1.9;
+      min-height:180px;
+      text-align:center;
+    }
+    .msg-line{
+      display:block;opacity:0;
+      transform:translateY(12px);
+      transition:opacity 0.7s ease,transform 0.7s ease;
+      margin-bottom:12px;
+    }
+    .msg-line.show{opacity:1;transform:translateY(0)}
+    .msg-line.highlight{color:var(--accent-pink);font-size:clamp(1.05rem,3.5vw,1.22rem)}
+    .cursor{display:inline-block;width:2px;height:1.1em;background:var(--accent-pink);margin-left:3px;vertical-align:middle;animation:blink 1s step-end infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+    .letter-sign{margin-top:28px;text-align:right;border-top:1px solid var(--border-soft);padding-top:18px;opacity:0;transition:opacity 1s ease}
+    .letter-sign.show{opacity:1}
+    .letter-sign p{text-align:right;font-family:'Dancing Script',cursive;font-size:1.3rem;color:var(--accent-gold)}
+    .letter-sign .sign-date{font-size:0.78rem;color:var(--text-dim);font-family:'Hind Siliguri',sans-serif;margin-top:4px;display:block}
+    .ending-flowers{text-align:center;font-size:1.3rem;letter-spacing:8px;margin-top:24px;opacity:0;transition:opacity 1.2s ease}
+    .ending-flowers.show{opacity:0.65}
+    .restart-btn{margin-top:32px;opacity:0;transition:opacity 1s ease;text-align:center}
+    .restart-btn.show{opacity:1}
+    @media(max-height:500px) and (orientation:landscape){
+      .letter-card{padding:20px 24px}
+      .message-body{min-height:120px}
+    }
+    @media(max-width:400px){.letter-card{padding:24px 18px}}
+  </style>
+</head>
+<body style="opacity:0">
+  <div class="stars-bg" aria-hidden="true"></div>
+  <div class="page-indicator">5 / 5</div>
+
+  <!-- 🎵 গান: Tum Hi Ho (Full Song with Lyrics) — Arijit Singh -->
+  <div class="music-player" id="musicPlayer">
+    <button class="music-btn" id="playBtn" aria-label="সুর চালাও">▶</button>
+    <span class="music-label" id="musicLabel">সুর চালাও</span>
+  </div>
+
+  <div class="page-wrapper" style="padding-top:40px;padding-bottom:40px">
+    <div class="content-layer final-wrapper">
+      <div class="section-header fade-in">
+        <span style="font-size:2rem;display:block;margin-bottom:8px" aria-hidden="true">🌸</span>
+        <h2>শেষ কথা</h2>
+        <div class="divider"></div>
+      </div>
+      <div class="letter-card fade-in" id="letterCard">
+        <div class="letter-deco" aria-hidden="true">✿ · ✦ · ✿</div>
+        <div class="message-body" id="messageBody"></div>
+        <span class="cursor" id="cursor" aria-hidden="true"></span>
+        <div class="letter-sign" id="letterSign">
+          <p>— মেঘ</p>
+          <p style="font-size:1rem;color:var(--text-soft)">- তোমাকে নিরামিষ বলতে বলতে আজ তোমার মেঘ নিরামিষ হয়ে গেল</p>
+          <span class="sign-date" id="signDate"></span>
+        </div>
+      </div>
+      <div class="ending-flowers" id="endingFlowers" aria-hidden="true">🌸 ✿ 🌷 ✿ 🌸</div>
+      <div class="restart-btn" id="restartBtn">
+        <button class="btn btn-primary" onclick="goToPage('index.html')">↺ আবার দেখতে চাও?</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    /* =============================================
+       💌 বার্তা — এখানে লেখা বদলাও
+       ============================================= */
+    const MESSAGE_LINES = [
+      { text: 'আমি জানি, আমরা এখন অনেক দূরে।',           highlight: false, delay: 800  },
+      { text: 'হয়তো অনেক কিছু আর আগের মতো নেই।',         highlight: false, delay: 2200 },
+      { text: 'কিন্তু আজকের দিনটা এলেই মনে পড়ে যায়।',   highlight: false, delay: 3800 },
+      { text: 'আমি কিছু expect করছি না।',                 highlight: true,  delay: 5400 },
+      { text: 'শুধু তোমার birthday টা special হোক —',      highlight: false, delay: 7000 },
+      { text: 'এইটাই চাইছিলাম।',                          highlight: true,  delay: 8600 },
+      { text: 'তুমি সবসময় ভালো থাকিও। সত্যিই।',          highlight: false, delay: 10400},
+    ];
+
+    const messageBody = document.getElementById('messageBody');
+    const cursor      = document.getElementById('cursor');
+    const letterSign  = document.getElementById('letterSign');
+    const endFlowers  = document.getElementById('endingFlowers');
+    const restartBtn  = document.getElementById('restartBtn');
+
+    /* আজকের তারিখ */
+    const signDate = document.getElementById('signDate');
+    if (signDate) {
+      const months = ['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'];
+      const now = new Date();
+      signDate.textContent = `${now.getDate()} ${months[now.getMonth()]}, ${now.getFullYear()}`;
+    }
+
+    function showMessages() {
+      let lastDelay = 0;
+      MESSAGE_LINES.forEach(line => {
+        lastDelay = line.delay;
+        setTimeout(() => {
+          const span = document.createElement('span');
+          span.classList.add('msg-line');
+          if (line.highlight) span.classList.add('highlight');
+          span.textContent = line.text;
+          messageBody.appendChild(span);
+          requestAnimationFrame(() => requestAnimationFrame(() => span.classList.add('show')));
+        }, line.delay);
+      });
+      const endTime = lastDelay + 1800;
+      setTimeout(() => {
+        if (cursor) cursor.style.display = 'none';
+        letterSign.classList.add('show');
+      }, endTime);
+      setTimeout(() => {
+        endFlowers.classList.add('show');
+        restartBtn.classList.add('show');
+        createHearts(6);
+      }, endTime + 800);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      /* 🎵 Tum Hi Ho with Lyrics — full circle ending */
+      initYouTubePlayer('Umqb9KENgmk');
+      setTimeout(showMessages, 600);
+    });
+  </script>
+</body>
+</html>
